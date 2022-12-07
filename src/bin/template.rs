@@ -1,18 +1,11 @@
-// Macro to execute this code with the input for the day.
-// Basically it takes a number as argument, and `fn main() ...` as another parameter (TokenStream),
-// then loads the file matching to the day and passes that to run its own main function,
-// from where it calls whatever is passed in here.
-// (Or at least something slightly similar is what's happening).
-
 // Todo: Replace this number with the day you want to run!
 #[aoc::main(1)]
 fn main(input: &str) {
-    let data = input.lines().collect();
-    println!("Todo: do something with this data and print out the solution. Test output: {}", calculate_something(&data));
+    println!("Todo: do something with this data and print out the solution. Test output: {}", calculate_something(input));
 }
 
-pub fn calculate_something(data: &Vec<&str>) -> u32 {
-    data[0].parse().unwrap()
+pub fn calculate_something(data: &str) -> u32 {
+    data.parse().unwrap()
 }
 
 #[cfg(test)]
@@ -24,13 +17,11 @@ mod tests {
 
     #[test]
     fn solution_part_1() {
-        let input = TEST_INPUT.lines().collect();
-        assert_eq!(12345, calculate_something(&input))
+        assert_eq!(12345, calculate_something(TEST_INPUT))
     }
 
     #[test]
     fn solution_part_2() {
-        let input = TEST_INPUT.lines().collect();
-        assert_eq!(98765, calculate_something(&input))
+        assert_eq!(98765, calculate_something(TEST_INPUT))
     }
 }
