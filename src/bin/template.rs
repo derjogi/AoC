@@ -1,7 +1,7 @@
 // Todo: Replace this number with the day you want to run!
 #[aoc::main(1)]
 fn main(input: &str) {
-    println!("Todo: do something with this data and print out the solution. Test output: {}", calculate_something(input));
+    println!("Test output: {}", calculate_something(input));
 }
 
 pub fn calculate_something(data: &str) -> u32 {
