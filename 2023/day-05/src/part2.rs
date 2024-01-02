@@ -7,7 +7,7 @@ use rayon::prelude::*;
 #[derive(Clone)]
 struct Data {
     mappings: Vec<Mapping>,
-    seed_positions: Vec<usize>
+    seed_positions: HashSet<usize>
 }
 
 #[derive(Clone)]
@@ -20,7 +20,7 @@ struct Mapping {
 }
 
 impl Mapping {
-    fn calculate_destination(&self, source_positions: &Vec<usize>, dest_positions: &mut Vec<usize>) {
+    fn calculate_destination(&self, source_positions: &HashSet<usize>, dest_positions: &mut HashSet<usize>) {
         source_positions.iter()
             .for_each(|seed| {
                 let mut pos:Option<usize> = None;
@@ -35,9 +35,9 @@ impl Mapping {
                 };
 
                 if pos == None {
-                    dest_positions.push(seed.clone());
+                    dest_positions.insert(seed.clone());
                 } else {
-                    dest_positions.push(self.dest_ranges[range_index.unwrap()].start+pos.unwrap());
+                    dest_positions.insert(self.dest_ranges[range_index.unwrap()].start+pos.unwrap());
                 }
             });
     }
@@ -71,7 +71,7 @@ fn parse_data(string: &str) -> Data {
                     ranges.push(start..end);
                 }
 
-                data.seed_positions = ranges.into_par_iter().flat_map(|range| range).collect::<Vec<_>>();
+                data.seed_positions = ranges.into_par_iter().flat_map(|range| range).collect::<HashSet<_>>();
 
                 println!("Parsed initial seeds");
             },
@@ -82,6 +82,7 @@ fn parse_data(string: &str) -> Data {
 
             (State::Map_Init, line) => {
                 let (from, to) = line.split_once(" ").unwrap().0.split_once("-to-").unwrap();
+                println!("Creating {from} -> {to} mapping");
                 data.mappings.push(Mapping {
                     from_name: Some(String::from(from)),
                     to_name: Some(String::from(to)),
@@ -114,11 +115,13 @@ pub fn process(
     input: &str,
 ) -> miette::Result<usize, AocError> {
     let mut data = parse_data(input);
+    println!("All data parsed. Begin calculations...");
     let length = data.mappings.len();
     let mut current_mapping = &mut data.mappings[0];
-    let mut source_positions: Vec<usize> = data.seed_positions.clone();
-    let mut dest_positions: Vec<usize> = Default::default();
+    let mut source_positions: HashSet<usize> = data.seed_positions.clone();
+    let mut dest_positions: HashSet<usize> = Default::default();
     for i in 0..length-1 {
+        println!("Calculate transition to {:?}", current_mapping.to_name);
         current_mapping.calculate_destination(&source_positions, &mut dest_positions);
         source_positions = dest_positions.clone();
         dest_positions.clear();
